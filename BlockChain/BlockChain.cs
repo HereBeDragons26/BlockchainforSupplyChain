@@ -61,7 +61,7 @@ namespace Blockchain {
         /// Gets block with given ID and all its parent blocks
         /// </summary>
         /// <param name="blockID">Block's ID</param>
-        /// <returns></returns>
+        /// <returns>List of blocks</returns>
         public static List<Block> GetAllBlock(long blockID) {
             GetAllBlockRec(GetBlock(blockID));
             return productBlocks;
