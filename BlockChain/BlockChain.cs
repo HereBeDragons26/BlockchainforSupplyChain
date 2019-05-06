@@ -6,7 +6,8 @@ namespace Blockchain {
     public class BlockChain {
         
         private static List<Block> Chain = null;
-        private static long genesisBlockID = 12589;
+        private static readonly long genesisBlockID = 12589;
+        public static string beginningOfHash = "000";
 
         private BlockChain() {
             GetChain();
@@ -65,6 +66,16 @@ namespace Blockchain {
         public static List<Block> GetAllBlock(long blockID) {
             GetAllBlockRec(GetBlock(blockID));
             return productBlocks;
+        }
+
+        public static Product GetProductInfo(List<Block> blocks) {
+            Product product = new Product();
+            for (int a = 0; a < blocks.Count; a++) {
+                for (int b = 0; b < blocks[a].Product.Features.Count; b++) {
+                    product.Features.Add(blocks[a].Product.Features[b]);
+                }
+            }
+            return product;
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Blockchain {
         static Thread listenerThread = null;
 
         public static readonly int PORT = 13000;
-        public static string SenderIP = "10.31.55.37";
-        public static string ReceiverIP = "10.31.55.49";
+        public static string SenderIP = "10.27.12.242";
+        public static string ReceiverIP = "10.27.13.14";
         //public static int ListenerPort { get; set; }
 
         public static void Send(string message) {
-            TcpClient tcpClient = new TcpClient(ReceiverIP, PORT);
+            TcpClient tcpClient = new TcpClient(SenderIP, PORT);
             NetworkStream stream = tcpClient.GetStream();
 
             ASCIIEncoding asen = new ASCIIEncoding();
@@ -31,7 +31,7 @@ namespace Blockchain {
 
         private static void listenerMethod() {
             while (true) {
-                TcpListener listener = new TcpListener(IPAddress.Parse(SenderIP), PORT);
+                TcpListener listener = new TcpListener(IPAddress.Any, PORT);
                 listener.Start();
                 Socket client = null;
                 try {
@@ -43,9 +43,7 @@ namespace Blockchain {
                     for (int i = 0; i < size; i++)
                         str += Convert.ToChar(bytes[i]);
 
-                    if (str.StartsWith("BattleshipGame")) {
-                        str = str.Substring(14, str.Length - 14);
-                    }
+                    Console.WriteLine(str);
                 }
                 catch (Exception e) {
                     Console.WriteLine(e.ToString());

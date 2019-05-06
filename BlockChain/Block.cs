@@ -11,14 +11,38 @@ namespace Blockchain {
         public Product Product { get; set; }
         public string Hash { get; set; }
         public string PreviousHash { get; set; }
+        public int Nonce { get; set; }
 
         public Block(List<long> parentID, long blockID, Product product, string previousHash) {
-            Time = DateTime.Now;
             ParentID = parentID;
             BlockID = blockID;
             Product = product;
             Hash = CalculateHash();
             PreviousHash = previousHash;
+        }
+
+        public bool Mine() {
+            Console.WriteLine("Mine start");
+            Nonce = 0;
+            while (true) {
+                //if(Nonce%1000 == 0)
+                //    Console.WriteLine(Nonce);
+                if (ChangeNonce(Nonce)) {
+                    //Console.WriteLine(Nonce + " Found");
+                    //Nonce++;
+                    Time = DateTime.Now;
+                    return true;
+                }
+                else
+                    Nonce++;
+            }
+        }
+
+        public bool ChangeNonce(int nonce) {
+            Nonce = nonce;
+            Hash = CalculateHash();
+            if (Hash.StartsWith(BlockChain.beginningOfHash)) return true;
+            else return false;
         }
 
         /// <summary>
@@ -27,9 +51,9 @@ namespace Blockchain {
         /// <returns>Hash of block</returns>
         public string CalculateHash() {
             SHA256 sHA256 = SHA256.Create();
-            byte[] input = Encoding.ASCII.GetBytes(Time + ParentID.ToString() + BlockID + Product);
+            byte[] input = Encoding.ASCII.GetBytes(ParentID.ToString() + BlockID.ToString() + Product.ToString() + Nonce.ToString());
             byte[] output = sHA256.ComputeHash(input);
-            return Convert.ToString(output);
+            return Convert.ToBase64String(output);
         }
     }
 }
