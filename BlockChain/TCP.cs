@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -73,5 +74,21 @@ namespace Blockchain {
             };
             listenerThread.Start();
         }
+
+        public static string JsonSerialize(object graph) {
+            return JsonConvert.SerializeObject(graph,
+                Formatting.None,
+                new JsonSerializerSettings {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+        }
+
+        public static object JsonDeserialize(string seralized) {
+            return JsonConvert.DeserializeObject(seralized,
+                new JsonSerializerSettings {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+        }
+
     }
 }
