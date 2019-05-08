@@ -6,17 +6,15 @@ using System.Text;
 namespace Blockchain {
     public class Block {
         public DateTime Time { get; set; }
-        public List<long> ParentID { get; set; }
         public long BlockID { get; set; }
-        public Product Product { get; set; }
+        public Data Data { get; set; }
         public string Hash { get; set; }
         public string PreviousHash { get; set; }
         public int Nonce { get; set; }
 
-        public Block(List<long> parentID, long blockID, Product product, string previousHash) {
-            ParentID = parentID;
+        public Block(long blockID, Data data, string previousHash) {
             BlockID = blockID;
-            Product = product;
+            Data = data;
             Hash = CalculateHash();
             PreviousHash = previousHash;
         }
@@ -55,7 +53,7 @@ namespace Blockchain {
         /// <returns>Hash of block</returns>
         public string CalculateHash() {
             SHA256 sHA256 = SHA256.Create();
-            byte[] input = Encoding.ASCII.GetBytes(ParentID.ToString() + BlockID.ToString() + Product.ToString() + Nonce.ToString());
+            byte[] input = Encoding.ASCII.GetBytes(BlockID.ToString() + Data.ToString() + Nonce.ToString());
             byte[] output = sHA256.ComputeHash(input);
             return Convert.ToBase64String(output);
         }
