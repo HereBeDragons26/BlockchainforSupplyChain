@@ -21,21 +21,25 @@ namespace Blockchain {
             PreviousHash = previousHash;
         }
 
-        public bool Mine() {
-            Console.WriteLine("Mine start");
+        public void Mine() {
+            int division = Int32.MaxValue / BlockChain.minerIPs.Count;
             Nonce = 0;
+            for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
+                if (BlockChain.minerIPs[a].Equals(BlockChain.myIP))
+                    Nonce = division * a;
+            }
+            Console.WriteLine("Mine started");
             while (true) {
                 //if(Nonce%1000 == 0)
                 //    Console.WriteLine(Nonce);
                 if (ChangeNonce(Nonce)) {
-                    //Console.WriteLine(Nonce + " Found");
-                    //Nonce++;
                     Time = DateTime.Now;
-                    return true;
+                    break;
                 }
                 else
                     Nonce++;
             }
+            Console.WriteLine("Mine ended");
         }
 
         public bool ChangeNonce(int nonce) {
