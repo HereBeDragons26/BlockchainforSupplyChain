@@ -12,12 +12,12 @@ namespace Blockchain {
         static Thread listenerThread = null;
 
         public static readonly int PORT = 13000;
-        public static string SenderIP = "10.27.12.242";
-        public static string ReceiverIP = "10.27.13.14";
+        public static string SenderIP = "10.27.49.8";
+        public static string WebServerIp;
         //public static int ListenerPort { get; set; }
 
-        public static void Send(string message) {
-            TcpClient tcpClient = new TcpClient(SenderIP, PORT);
+        public static void SendWebServer(string message) {
+            TcpClient tcpClient = new TcpClient(WebServerIp, PORT);
             NetworkStream stream = tcpClient.GetStream();
 
             ASCIIEncoding asen = new ASCIIEncoding();
@@ -28,6 +28,26 @@ namespace Blockchain {
             tcpClient.Close();
             stream.Flush();
             stream.Close();
+        }
+
+        public static void SendAllMiners(string message) {
+
+            BlockChain.minerIPs.ForEach(mp => {
+
+                TcpClient tcpClient = new TcpClient(mp, PORT);
+                NetworkStream stream = tcpClient.GetStream();
+
+                ASCIIEncoding asen = new ASCIIEncoding();
+                byte[] ba = asen.GetBytes(message);
+
+                stream.Write(ba, 0, ba.Length);
+
+                tcpClient.Close();
+                stream.Flush();
+                stream.Close();
+
+            });
+
         }
 
         private static void listenerMethod() {
