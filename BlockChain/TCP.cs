@@ -37,6 +37,7 @@ namespace Blockchain {
                 Socket client = null;
                 try {
                     client = listener.AcceptSocket();
+                    String ip = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
                     byte[] bytes = new byte[1024];
 
                     int size = client.Receive(bytes);
@@ -44,7 +45,7 @@ namespace Blockchain {
                     for (int i = 0; i < size; i++)
                         str += Convert.ToChar(bytes[i]);
 
-                    new Thread(() => Interpreter(str)).Start();
+                    new Thread(() => Interpreter(str, ip)).Start();
 
                 }
                 catch (Exception e) {
@@ -66,10 +67,10 @@ namespace Blockchain {
             listenerThread.Start();
         }
 
-        private static void Interpreter(String message) {
+        private static void Interpreter(string message, string ip) {
 
             // received miners list
-            if (message.StartsWith("minerslist")) {
+            if (message.StartsWith("minersList")) {
 
                 
 
@@ -77,16 +78,24 @@ namespace Blockchain {
             }
 
             // received a new block to add
-            if (message.StartsWith("addblock")) {
-
-
-
+            if (message.StartsWith("addBlock")) {
+                Data data = (Data)JsonDeserialize(message.Substring(8));
+                BlockChain.ReceiveNewBlock(data);
                 return;
             }
 
+            if (message.StartsWith("checkNonce")) {
+                message = message.Substring(10);
+                string[] checkNonceArray = message.Split('$');
+                BlockChain.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]));
+                return;
+            }
 
-
-
+            if (message.StartsWith("nonceIsTrue")) {
+                message = message.Substring(11);
+                BlockChain.SetMinersTrue(ip, long.Parse(message));
+                return;
+            }
 
         }
 
