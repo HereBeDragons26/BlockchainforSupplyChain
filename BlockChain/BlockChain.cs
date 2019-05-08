@@ -29,20 +29,19 @@ namespace Blockchain {
         /// Creates first block of chain
         /// </summary>
         public static void CreateGenesisBlock() {
-            Chain.Add(new Block(new List<long>(), genesisBlockID, new Product(), "0"));
+            Chain.Add(new Block(genesisBlockID, new Data(), "0"));
         }
 
         /// <summary>
         /// Creates block and adds it to chain
         /// </summary>
-        /// <param name="parentID">Parent ID required to find this product's origin</param>
-        /// <param name="product">List of features</param>
-        public static Block CreateBlock(List<long> parentID, Product product) {
+        /// <param name="data">List of features and parent IDs</param>
+        public static Block CreateBlock(Data data) {
             List<Block> chain = GetChain();
             Block lastBlock = chain[chain.Count - 1];
             string lastBlockHash = lastBlock.Hash;
             long lastBlockID = lastBlock.BlockID + 1;
-            return new Block(parentID, lastBlockID, product, lastBlockHash);
+            return new Block(lastBlockID, data, lastBlockHash);
         }
 
         /// <summary>
@@ -57,8 +56,8 @@ namespace Blockchain {
         public static List<Block> productBlocks;
         private static void GetAllBlockRec(Block block) {
             productBlocks.Add(block);
-            for (int a = 0; a < block.ParentID.Count; a++) {
-                Block parentBlock = GetBlock(block.ParentID[a]);
+            for (int a = 0; a < block.Data.ParentID.Count; a++) {
+                Block parentBlock = GetBlock(block.Data.ParentID[a]);
                 GetAllBlockRec(parentBlock);
             }
         }
@@ -82,8 +81,8 @@ namespace Blockchain {
             List<Block> blocks = GetAllBlock(blockID);
             Product product = new Product();
             for (int a = 0; a < blocks.Count; a++) {
-                for (int b = 0; b < blocks[a].Product.Features.Count; b++) {
-                    product.Features.Add(blocks[a].Product.Features[b]);
+                for (int b = 0; b < blocks[a].Data.Product.Features.Count; b++) {
+                    product.Features.Add(blocks[a].Data.Product.Features[b]);
                 }
             }
             return product;
@@ -96,10 +95,10 @@ namespace Blockchain {
             Console.WriteLine("New miner added: " + ip);
         }
 
-        public static void ReceiveNewBlock(List<long> parentID, Product product) {
+        public static void ReceiveNewBlock(Data data) {
             Block block = null;
             for (int a = 0; a < miners.Count; a++) {
-                block = CreateBlock(parentID, product);
+                block = CreateBlock(data);
                 miners[a].Add(new KeyValuePair<Block, bool>(block, false));
             }
             Console.WriteLine("Received new block");
