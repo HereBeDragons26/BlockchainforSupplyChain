@@ -13,5 +13,6 @@ namespace Blockchain {
             ParentID = new List<long>();
             Product = new Product();
         }
+
     }
 }

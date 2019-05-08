@@ -34,6 +34,8 @@ namespace Blockchain {
 
             BlockChain.minerIPs.ForEach(mp => {
 
+                if (mp == BlockChain.myIP) return;
+
                 TcpClient tcpClient = new TcpClient(mp, PORT);
                 NetworkStream stream = tcpClient.GetStream();
 
