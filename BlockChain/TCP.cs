@@ -44,7 +44,8 @@ namespace Blockchain {
                     for (int i = 0; i < size; i++)
                         str += Convert.ToChar(bytes[i]);
 
-                    Console.WriteLine(str);
+                    new Thread(() => Interpreter(str)).Start();
+
                 }
                 catch (Exception e) {
                     Console.WriteLine(e.ToString());
@@ -58,21 +59,35 @@ namespace Blockchain {
             }
         }
 
-        private static void executer(String message, byte[] bytes) {
-            //if (message.StartsWith("FileSize")) {
-            //    message = message.Substring(8, message.Length - 8);
-            //    String[] strArray = message.Split('$');
-            //    Data.PackageSize = int.Parse(strArray[0]);
-            //    Data.Image = new byte[int.Parse(strArray[1])];
-            //    Data.ByteMax = int.Parse(strArray[1]);
-            //    Receiver.connection(Data.SendIp);
-        }
-
         public static void StartListener() {
             listenerThread = new Thread(new ThreadStart(listenerMethod)) {
                 Name = "UdpConnection.ListenThread"
             };
             listenerThread.Start();
+        }
+
+        private static void Interpreter(String message) {
+
+            // received miners list
+            if (message.StartsWith("minerslist")) {
+
+                
+
+                return;
+            }
+
+            // received a new block to add
+            if (message.StartsWith("addblock")) {
+
+
+
+                return;
+            }
+
+
+
+
+
         }
 
         public static string JsonSerialize(object graph) {
