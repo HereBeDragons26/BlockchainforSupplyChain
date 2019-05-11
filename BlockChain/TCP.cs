@@ -52,11 +52,13 @@ namespace Blockchain {
 
         }
 
-        private static void listenerMethod() {
+        private static void ListenerMethod() {
+
+            TcpListener listener = new TcpListener(IPAddress.Any, PORT);
+            listener.Start();
+            Socket client = null;
+
             while (true) {
-                TcpListener listener = new TcpListener(IPAddress.Any, PORT);
-                listener.Start();
-                Socket client = null;
                 try {
                     client = listener.AcceptSocket();
                     String ip = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
@@ -73,17 +75,11 @@ namespace Blockchain {
                 catch (Exception e) {
                     Console.WriteLine(e.ToString());
                 }
-                finally {
-                    if (client != null)
-                        client.Close();
-                    if (listener != null)
-                        listener.Stop();
-                }
             }
         }
 
         public static void StartListener() {
-            listenerThread = new Thread(new ThreadStart(listenerMethod)) {
+            listenerThread = new Thread(new ThreadStart(ListenerMethod)) {
                 Name = "UdpConnection.ListenThread"
             };
             listenerThread.Start();
