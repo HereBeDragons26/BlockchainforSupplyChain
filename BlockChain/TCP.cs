@@ -93,6 +93,9 @@ namespace Blockchain {
                     miners = new List<string>()
                 };
 
+                Object ret = JsonDeserialize(message);
+                var obj = Cast(ret, new { miners = new List<string>() });
+
                 for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
                     BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
                 }
@@ -136,6 +139,8 @@ namespace Blockchain {
             }
 
         }
+
+        public static T Cast<T>(object obj, T type) { return (T)obj; }
 
         public static string JsonSerialize(object graph) {
             return JsonConvert.SerializeObject(graph,
