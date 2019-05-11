@@ -4,10 +4,10 @@ using System.Net;
 using System.Text;
 
 namespace Blockchain {
-    class Test {
-        public static void Main(String[] args) {
+    public class Test {
+        public static void TestMethod() {
             IPAddress[] address = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-            BlockChain.myIP = address[1].ToString();
+            TCP.myIP = address[1].ToString();
 
             TCP.StartListener();
 

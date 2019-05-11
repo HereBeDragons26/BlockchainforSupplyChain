@@ -6,13 +6,14 @@ using System.Threading;
 
 namespace Blockchain {
     public class BlockChain {
-        
+
         private static List<Block> Chain = null;
         private static readonly long genesisBlockID = 12589;
         public static string beginningOfHash = "000";
+
         public static List<List<KeyValuePair<Block, bool>>> miners = new List<List<KeyValuePair<Block, bool>>>();
         public static List<string> minerIPs = null;
-        public static string myIP = "10.27.49.6";
+
         private static Thread nonceFinderThread = null;
 
         private BlockChain() {
@@ -54,7 +55,7 @@ namespace Blockchain {
             return Chain[(int)(blockID - genesisBlockID)];
         }
 
-        public static List<Block> productBlocks;
+        public static List<Block> productBlocks = new List<Block>();
         private static void GetAllBlockRec(Block block) {
             productBlocks.Add(block);
             for (int a = 0; a < block.Data.ParentID.Count; a++) {
@@ -103,8 +104,8 @@ namespace Blockchain {
         }
 
         public static void AddBlockToChain(Block block, long blockID) {
-            for(int a = 0; a < miners.Count; a++) {
-                for(int b = 0; b < miners[a].Count; b++) {
+            for (int a = 0; a < miners.Count; a++) {
+                for (int b = 0; b < miners[a].Count; b++) {
                     if (miners[a][b].Key.BlockID == blockID) {
                         miners[a].RemoveAt(b);
                         break;
@@ -124,8 +125,8 @@ namespace Blockchain {
                 }
             }
             int minerIndex = 0;
-            for(int a = 0; a < minerIPs.Count; a++) {
-                if(minerIPs[a].Equals(myIP)) {
+            for (int a = 0; a < minerIPs.Count; a++) {
+                if (minerIPs[a].Equals(TCP.myIP)) {
                     minerIndex = a;
                     break;
                 }
@@ -141,15 +142,17 @@ namespace Blockchain {
         }
 
         public static void SetMyMinerTrue(DateTime time, long blockID, int nonce) {
+            Console.WriteLine("Nonce is checking for " + blockID);
             Block block = null;
             for (int a = 0; a < miners[0].Count; a++) {
                 if (miners[0][a].Key.BlockID == blockID)
                     block = miners[0][a].Key;
             }
             if (block.ChangeNonce(nonce)) {
+                Console.WriteLine("Nonce is true for " + blockID);
                 int minerIndex = 0;
                 for (int a = 0; a < minerIPs.Count; a++) {
-                    if (minerIPs[a].Equals(myIP)) {
+                    if (minerIPs[a].Equals(TCP.myIP)) {
                         minerIndex = a;
                         break;
                     }
@@ -163,7 +166,7 @@ namespace Blockchain {
                 }
                 TCP.SendAllMiners("nonceIsTrue" + blockID);
             }
-            else Console.WriteLine("Nonce is wrong");
+            else Console.WriteLine("Nonce is wrong for " + blockID);
         }
 
         public static void SetMinersTrue(string ip, long blockID) {
@@ -208,8 +211,8 @@ namespace Blockchain {
         }
 
         public static void ConnectToNetwork() {
-            TCP.SendWebServer("connectToNetwork" + myIP);
-            Console.WriteLine("Connected to network!");
+            TCP.SendWebServer("connectToNetwork" + TCP.myIP);
+            Console.WriteLine("Connect request sent to network");
         }
     }
 }
