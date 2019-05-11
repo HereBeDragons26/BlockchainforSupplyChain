@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Blockchain {
+namespace Blockchain.Model {
     public class Product {
         public List<Feature> Features { get; set; }
 

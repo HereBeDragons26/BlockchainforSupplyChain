@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Blockchain {
+namespace Blockchain.Model {
     public class Data {
 
         public List<long> ParentID { set; get; }
+
         public Product Product { set; get; }
 
         public Data() {

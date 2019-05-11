@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blockchain.Model;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;

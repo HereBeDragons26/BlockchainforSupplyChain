@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Blockchain.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,7 @@ namespace Blockchain {
         private static readonly long genesisBlockID = 12589;
         public static string beginningOfHash = "000";
         public static List<List<KeyValuePair<Block, bool>>> miners = new List<List<KeyValuePair<Block, bool>>>();
-        public static List<string> minerIPs = new List<string>();
+        public static List<string> minerIPs = null;
         public static string myIP = "10.27.49.6";
         private static Thread nonceFinderThread = null;
 

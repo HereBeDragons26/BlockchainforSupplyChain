@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Blockchain.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -86,21 +87,26 @@ namespace Blockchain {
 
         private static void Interpreter(string message, string ip) {
 
+            message = message.Replace("SupplyChain", "Blockchain");
             // received miners list
             if (message.StartsWith("minersList")) {
                 message = message.Substring(10);
-                var tempType = new {
-                    miners = new List<string>()
-                };
-
-                Object ret = JsonDeserialize(message);
+                //Console.WriteLine(BlockChain.minerIPs.Count);
+                object ret = JsonDeserialize(message);
                 var obj = Cast(ret, new { miners = new List<string>() });
+                BlockChain.minerIPs = obj.miners;
+                Console.WriteLine(BlockChain.minerIPs.Count);
 
                 for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
                     BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
                 }
-                //TCP.SendAllMiners("getChain");
-                TCP.SendWebServer("addMeNow");
+
+                if(BlockChain.minerIPs.Count != 0)
+                    SendAllMiners("getChain");
+                else {
+                    BlockChain.GetChain();
+                    SendWebServer("addMeNow");
+                }
                 return;
             }
 
@@ -129,7 +135,7 @@ namespace Blockchain {
 
             if (message.StartsWith("getChain")) {
                 message = message.Substring(8);
-                //SendWebServer("addMeNow");
+                //Send(ip, )
                 return;
             }
 
