@@ -94,7 +94,8 @@ namespace Blockchain {
             // received miners list
             if (message.StartsWith("minersList")) {
 
-                
+                Object ret = JsonDeserialize(message);
+                var obj = Cast(ret, new { miners = new List<string>() });
 
                 return;
             }
@@ -120,6 +121,8 @@ namespace Blockchain {
             }
 
         }
+
+        public static T Cast<T>(object obj, T type) { return (T)obj; }
 
         public static string JsonSerialize(object graph) {
             return JsonConvert.SerializeObject(graph,
