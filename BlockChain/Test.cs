@@ -6,17 +6,19 @@ using System.Text;
 namespace Blockchain {
     class Test {
         public static void Main(String[] args) {
-            BlockChain.AddNewMiner("10.27.49.6");
-            BlockChain.AddNewMiner("10.27.49.8");
+            IPAddress[] address = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            BlockChain.myIP = address[1].ToString();
 
             TCP.StartListener();
 
-            Data data = new Data();
-            data.ParentID.Add(12);
-            data.Product = new Product();
-            data.Product.Features.Add(new Feature(DateTime.Now, "buğday asdsa"));
+            BlockChain.ConnectToNetwork();
 
-            BlockChain.ReceiveNewBlock(data);
+            //Data data = new Data();
+            //data.ParentID.Add(12);
+            //data.Product = new Product();
+            //data.Product.Features.Add(new Feature(DateTime.Now, "buğday asdsa"));
+
+            //BlockChain.ReceiveNewBlock(data);
         }
     }
 }
