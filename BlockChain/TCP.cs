@@ -12,9 +12,7 @@ namespace Blockchain {
         static Thread listenerThread = null;
 
         public static readonly int PORT = 13000;
-        public static string SenderIP = "10.27.49.8";
-        public static string WebServerIp;
-        //public static int ListenerPort { get; set; }
+        public static string WebServerIp = "10.27.19.162";
 
         public static void SendWebServer(string message) {
             TcpClient tcpClient = new TcpClient(WebServerIp, PORT);
@@ -31,7 +29,6 @@ namespace Blockchain {
         }
 
         public static void SendAllMiners(string message) {
-
             BlockChain.minerIPs.ForEach(mp => {
 
                 if (mp == BlockChain.myIP) return;
@@ -47,9 +44,7 @@ namespace Blockchain {
                 tcpClient.Close();
                 stream.Flush();
                 stream.Close();
-
             });
-
         }
 
         private static void ListenerMethod() {
@@ -89,21 +84,32 @@ namespace Blockchain {
 
             // received miners list
             if (message.StartsWith("minersList")) {
+                message = message.Substring(10);
+                var tempType = new {
+                    miners = new List<string>()
+                };
 
                 Object ret = JsonDeserialize(message);
                 var obj = Cast(ret, new { miners = new List<string>() });
 
+                for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
+                    BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
+                }
+                //TCP.SendAllMiners("getChain");
+                TCP.SendWebServer("addMeNow");
                 return;
             }
 
             // received a new block to add
             if (message.StartsWith("addBlock")) {
+                Console.WriteLine("addBlock");
                 Data data = (Data)JsonDeserialize(message.Substring(8));
                 BlockChain.ReceiveNewBlock(data);
                 return;
             }
 
             if (message.StartsWith("checkNonce")) {
+                Console.WriteLine("checkNonce");
                 message = message.Substring(10);
                 string[] checkNonceArray = message.Split('$');
                 BlockChain.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]));
@@ -111,9 +117,21 @@ namespace Blockchain {
             }
 
             if (message.StartsWith("nonceIsTrue")) {
+                Console.WriteLine("nonceIsTrue");
                 message = message.Substring(11);
                 BlockChain.SetMinersTrue(ip, long.Parse(message));
                 return;
+            }
+
+            if (message.StartsWith("getChain")) {
+                message = message.Substring(8);
+                //SendWebServer("addMeNow");
+                return;
+            }
+
+            if(message.StartsWith("newMinerJoined")) {
+                BlockChain.minerIPs.Add(ip);
+                BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
             }
 
         }

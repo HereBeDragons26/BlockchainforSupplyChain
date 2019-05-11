@@ -6,7 +6,6 @@ namespace Blockchain {
     public class Data {
 
         public List<long> ParentID { set; get; }
-
         public Product Product { set; get; }
 
         public Data() {

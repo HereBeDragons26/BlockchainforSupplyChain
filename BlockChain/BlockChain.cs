@@ -9,7 +9,7 @@ namespace Blockchain {
         private static List<Block> Chain = null;
         private static readonly long genesisBlockID = 12589;
         public static string beginningOfHash = "000";
-        private static List<List<KeyValuePair<Block, bool>>> miners = new List<List<KeyValuePair<Block, bool>>>();
+        public static List<List<KeyValuePair<Block, bool>>> miners = new List<List<KeyValuePair<Block, bool>>>();
         public static List<string> minerIPs = new List<string>();
         public static string myIP = "10.27.49.6";
         private static Thread nonceFinderThread = null;
@@ -88,13 +88,6 @@ namespace Blockchain {
             return product;
         }
 
-
-        public static void AddNewMiner(string ip) {
-            miners.Add(new List<KeyValuePair<Block, bool>>());
-            minerIPs.Add(ip);
-            Console.WriteLine("New miner added: " + ip);
-        }
-
         public static void ReceiveNewBlock(Data data) {
             Block block = null;
             for (int a = 0; a < miners.Count; a++) {
@@ -117,7 +110,6 @@ namespace Blockchain {
                     }
                 }
             }
-
             Chain.Add(block);
             Console.WriteLine("Block added to chain.");
         }
@@ -130,7 +122,6 @@ namespace Blockchain {
                     break;
                 }
             }
-            
             int minerIndex = 0;
             for(int a = 0; a < minerIPs.Count; a++) {
                 if(minerIPs[a].Equals(myIP)) {
@@ -154,7 +145,6 @@ namespace Blockchain {
                 if (miners[0][a].Key.BlockID == blockID)
                     block = miners[0][a].Key;
             }
-
             if (block.ChangeNonce(nonce)) {
                 int minerIndex = 0;
                 for (int a = 0; a < minerIPs.Count; a++) {
@@ -214,6 +204,11 @@ namespace Blockchain {
             if (countOfTrueBlock > (minerIPs.Count / 2.0)) {
                 AddBlockToChain(block, block.BlockID);
             }
+        }
+
+        public static void ConnectToNetwork() {
+            TCP.SendWebServer("connectToNetwork" + myIP);
+            Console.WriteLine("Connected to network!");
         }
     }
 }
