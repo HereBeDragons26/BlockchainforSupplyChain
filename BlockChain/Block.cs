@@ -32,6 +32,7 @@ namespace Blockchain {
                 //if(Nonce%1000 == 0)
                 //    Console.WriteLine(Nonce);
                 if (ChangeNonce(Nonce)) {
+                    Console.WriteLine("Mine ended");
                     Time = DateTime.Now;
                     BlockChain.SetMyMinerTrue(Time, BlockID);
                     TCP.SendAllMiners("checkNonce"+ Time.ToString() + "$" + BlockID.ToString() + "$" + Nonce.ToString());
@@ -42,8 +43,7 @@ namespace Blockchain {
             }
             Console.WriteLine(
                 "Block's hash is -> " + Hash +
-                "\nBlock's nonce is -> " + Nonce +
-                "\nMine ended\n");
+                "\nBlock's nonce is -> " + Nonce + "\n");
         }
 
         public bool ChangeNonce(int nonce) {
