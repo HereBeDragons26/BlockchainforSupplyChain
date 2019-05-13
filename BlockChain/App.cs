@@ -1,11 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
 namespace Blockchain {
     public class App {
 
         public static void Main() {
+            IPAddress[] address = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+            TCP.myIP = address[1].ToString();
+            Console.WriteLine("Your ip is: " + TCP.myIP + "\n" +
+                "Is it true Y/N");
+            string answer = Console.ReadLine();
+            if(!answer.ToLower().Equals("y")) {
+                Console.WriteLine("Enter your ip");
+                TCP.myIP = Console.ReadLine();
+            }
+                
+            TCP.StartListener();
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
             //Test.TestMethod();
             Console.WriteLine("\nMiner application starting...\n");
