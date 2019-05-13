@@ -12,12 +12,13 @@ namespace Blockchain {
 
         static Thread listenerThread = null;
 
-        public static readonly int PORT = 13000;
+        public static readonly int WebServerPort = 13001;
+        public static readonly int MinerPort = 13000;
         public static string WebServerIp = "192.168.43.14";
         public static string myIP;
 
         public static void SendWebServer(string message) {
-            TcpClient tcpClient = new TcpClient(WebServerIp, PORT);
+            TcpClient tcpClient = new TcpClient(WebServerIp, WebServerPort);
             NetworkStream stream = tcpClient.GetStream();
 
             ASCIIEncoding asen = new ASCIIEncoding();
@@ -35,7 +36,7 @@ namespace Blockchain {
 
                 if (mp == TCP.myIP) return;
 
-                TcpClient tcpClient = new TcpClient(mp, PORT);
+                TcpClient tcpClient = new TcpClient(mp, MinerPort);
                 NetworkStream stream = tcpClient.GetStream();
 
                 ASCIIEncoding asen = new ASCIIEncoding();
@@ -51,7 +52,7 @@ namespace Blockchain {
 
         private static void ListenerMethod() {
 
-            TcpListener listener = new TcpListener(IPAddress.Any, PORT);
+            TcpListener listener = new TcpListener(IPAddress.Any, MinerPort);
             listener.Start();
             Socket client = null;
 
