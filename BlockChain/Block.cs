@@ -43,7 +43,8 @@ namespace Blockchain {
             }
             Console.WriteLine(
                 "Block's hash is -> " + Hash +
-                "\nBlock's nonce is -> " + Nonce + "\n");
+                "\nBlock's nonce is -> " + Nonce + "\n" +
+                "Found Date is -> " + Time + "\n");
         }
 
         public bool ChangeNonce(int nonce) {

@@ -117,7 +117,7 @@ namespace Blockchain {
             int countOfTrueBlock = 0;
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
-                    if (Miners.miners[a][b].Key == block) {
+                    if (Miners.miners[a][b].Key.BlockID == block.BlockID) {
                         if (Miners.miners[a][b].Value) {
                             countOfTrueBlock++;
                             break;

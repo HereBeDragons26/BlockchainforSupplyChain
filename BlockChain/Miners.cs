@@ -14,6 +14,7 @@ namespace Blockchain {
         /// <param name="time"></param>
         /// <param name="blockID"></param>
         public static void SetMyMinerTrue(DateTime time, long blockID) {
+            Console.WriteLine("SetMyMinerTrue");
             UpdateProcessingBlockList(time, blockID);
         }
 
@@ -24,6 +25,7 @@ namespace Blockchain {
         /// <param name="blockID"></param>
         /// <param name="nonce"></param>
         public static void SetMyMinerTrue(DateTime time, long blockID, int nonce) {
+            Console.WriteLine("SetMyMinerTrueWithNonce");
             Console.WriteLine("Nonce is checking for " + blockID);
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             Block block = keyValuePair.Value;
@@ -38,6 +40,7 @@ namespace Blockchain {
         }
 
         public static void SetMinersTrue(string ip, long blockID) {
+            Console.WriteLine("SetMinersTrue");
             int minerIndex = FindIndexOfGivenInput(ip);
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             int blockIndex = keyValuePair.Key;
