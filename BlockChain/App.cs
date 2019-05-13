@@ -6,6 +6,7 @@ namespace Blockchain {
     public class App {
 
         public static void Main() {
+            Console.WriteLine("Miner application starting...\n\n");
             Test.TestMethod();
 
             //MainMethod();

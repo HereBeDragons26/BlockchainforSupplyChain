@@ -7,6 +7,8 @@ using System.Threading;
 namespace Blockchain {
     public class BlockChain {
 
+        public static BlockChain blockChainInstance;
+
         private static List<Block> Chain = null;
         private static readonly long genesisBlockID = 12589;
         public static string beginningOfHash = "000";
@@ -18,6 +20,7 @@ namespace Blockchain {
 
         private BlockChain() {
             GetChain();
+            blockChainInstance = this;
         }
         public static List<Block> GetChain() {
             if (Chain == null) {
@@ -25,6 +28,11 @@ namespace Blockchain {
                 CreateGenesisBlock();
             }
             return Chain;
+        }
+
+        public static void ReceiveChain(List<Block> blockChain) {
+            Chain = blockChain;
+            Console.WriteLine("Received blockchain");
         }
 
         /// <summary>

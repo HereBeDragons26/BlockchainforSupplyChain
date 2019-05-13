@@ -17,6 +17,20 @@ namespace Blockchain {
         public static string WebServerIp = "192.168.43.14";
         public static string myIP;
 
+        public static void Send(string ip, string message) {
+            TcpClient tcpClient = new TcpClient(ip, MinerPort);
+            NetworkStream stream = tcpClient.GetStream();
+
+            ASCIIEncoding asen = new ASCIIEncoding();
+            byte[] ba = asen.GetBytes(message);
+
+            stream.Write(ba, 0, ba.Length);
+
+            tcpClient.Close();
+            stream.Flush();
+            stream.Close();
+        }
+
         public static void SendWebServer(string message) {
             TcpClient tcpClient = new TcpClient(WebServerIp, WebServerPort);
             NetworkStream stream = tcpClient.GetStream();
@@ -30,6 +44,7 @@ namespace Blockchain {
             stream.Flush();
             stream.Close();
         }
+
 
         public static void SendAllMiners(string message) {
             BlockChain.minerIPs.ForEach(mp => {
@@ -131,12 +146,18 @@ namespace Blockchain {
             }
 
             if (message.StartsWith("getChain")) {
-                message = message.Substring(8);
-                //Send(ip, )
+                Send(ip, "receiveChain" + JsonSerialize(new { chain = BlockChain.GetChain() }));
                 return;
             }
 
-            if(message.StartsWith("newMinerJoined")) {
+            if (message.StartsWith("receiveChain")) {
+                object ret = JsonDeserialize(message.Substring(12));
+                var obj = Cast(ret, new { chain = new List<Block>() });
+                BlockChain.ReceiveChain(obj.chain);
+                return;
+            }
+
+            if (message.StartsWith("newMinerJoined")) {
                 message = message.Substring(14);
                 BlockChain.minerIPs.Add(message);
                 BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
