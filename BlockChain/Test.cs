@@ -11,7 +11,7 @@ namespace Blockchain {
 
             TCP.StartListener();
 
-            BlockChain.ConnectToNetwork();
+            Miners.ConnectToNetwork();
 
             //Data data = new Data();
             //data.ParentID.Add(12);

@@ -13,9 +13,6 @@ namespace Blockchain {
         private static readonly long genesisBlockID = 12589;
         public static string beginningOfHash = "000";
 
-        public static List<List<KeyValuePair<Block, bool>>> miners = new List<List<KeyValuePair<Block, bool>>>();
-        public static List<string> minerIPs = null;
-
         private static Thread nonceFinderThread = null;
 
         private BlockChain() {
@@ -33,6 +30,7 @@ namespace Blockchain {
         public static void ReceiveChain(List<Block> blockChain) {
             Chain = blockChain;
             Console.WriteLine("Received blockchain");
+            TCP.SendWebServer("addMeNow");
         }
 
         /// <summary>
@@ -98,11 +96,15 @@ namespace Blockchain {
             return product;
         }
 
+        /// <summary>
+        /// Website sent new block
+        /// </summary>
+        /// <param name="data"></param>
         public static void ReceiveNewBlock(Data data) {
             Block block = null;
-            for (int a = 0; a < miners.Count; a++) {
+            for (int a = 0; a < Miners.miners.Count; a++) {
                 block = CreateBlock(data);
-                miners[a].Add(new KeyValuePair<Block, bool>(block, false));
+                Miners.miners[a].Add(new KeyValuePair<Block, bool>(block, false));
             }
             Console.WriteLine("Received new block");
             nonceFinderThread = new Thread(new ThreadStart(block.Mine)) {
@@ -111,11 +113,35 @@ namespace Blockchain {
             nonceFinderThread.Start();
         }
 
+        public static void TryToAddChain(Block block) {
+            int countOfTrueBlock = 0;
+            for (int a = 0; a < Miners.miners.Count; a++) {
+                for (int b = 0; b < Miners.miners[a].Count; b++) {
+                    if (Miners.miners[a][b].Key == block) {
+                        if (Miners.miners[a][b].Value) {
+                            countOfTrueBlock++;
+                            break;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("Miners Count: " + Miners.minerIPs.Count);
+            Console.WriteLine("True Count: " + countOfTrueBlock);
+            if (countOfTrueBlock > (Miners.minerIPs.Count / 2.0)) {
+                AddBlockToChain(block, block.BlockID);
+            }
+        }
+
+        /// <summary>
+        /// Adds block to chain if more than %50 of miners agrees it
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="blockID"></param>
         public static void AddBlockToChain(Block block, long blockID) {
-            for (int a = 0; a < miners.Count; a++) {
-                for (int b = 0; b < miners[a].Count; b++) {
-                    if (miners[a][b].Key.BlockID == blockID) {
-                        miners[a].RemoveAt(b);
+            for (int a = 0; a < Miners.miners.Count; a++) {
+                for (int b = 0; b < Miners.miners[a].Count; b++) {
+                    if (Miners.miners[a][b].Key.BlockID == blockID) {
+                        Miners.miners[a].RemoveAt(b);
                         break;
                     }
                 }
@@ -124,103 +150,5 @@ namespace Blockchain {
             Console.WriteLine("Block added to chain.");
         }
 
-        public static void SetMyMinerTrue(DateTime time, long blockID) {
-            Block block = null;
-            for (int a = 0; a < miners[0].Count; a++) {
-                if (miners[0][a].Key.BlockID == blockID) {
-                    block = miners[0][a].Key;
-                    break;
-                }
-            }
-            int minerIndex = 0;
-            for (int a = 0; a < minerIPs.Count; a++) {
-                if (minerIPs[a].Equals(TCP.myIP)) {
-                    minerIndex = a;
-                    break;
-                }
-            }
-            for (int a = 0; a < miners[minerIndex].Count; a++) {
-                if (miners[minerIndex][a].Key == block) {
-                    miners[minerIndex].RemoveAt(a);
-                    block.Time = time;
-                    miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
-                    TryToAddChain(block);
-                }
-            }
-        }
-
-        public static void SetMyMinerTrue(DateTime time, long blockID, int nonce) {
-            Console.WriteLine("Nonce is checking for " + blockID);
-            Block block = null;
-            for (int a = 0; a < miners[0].Count; a++) {
-                if (miners[0][a].Key.BlockID == blockID)
-                    block = miners[0][a].Key;
-            }
-            if (block.ChangeNonce(nonce)) {
-                Console.WriteLine("Nonce is true for " + blockID);
-                int minerIndex = 0;
-                for (int a = 0; a < minerIPs.Count; a++) {
-                    if (minerIPs[a].Equals(TCP.myIP)) {
-                        minerIndex = a;
-                        break;
-                    }
-                }
-                for (int a = 0; a < miners[minerIndex].Count; a++) {
-                    if (miners[minerIndex][a].Key == block) {
-                        block.Time = time;
-                        miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
-                        TryToAddChain(block);
-                    }
-                }
-                TCP.SendAllMiners("nonceIsTrue" + blockID);
-            }
-            else Console.WriteLine("Nonce is wrong for " + blockID);
-        }
-
-        public static void SetMinersTrue(string ip, long blockID) {
-            Block block = null;
-            for (int a = 0; a < miners[0].Count; a++) {
-                if (miners[0][a].Key.BlockID == blockID)
-                    block = miners[0][a].Key;
-            }
-
-            int minerIndex = 0;
-            for (int a = 0; a < minerIPs.Count; a++) {
-                if (minerIPs[a].Equals(ip)) {
-                    minerIndex = a;
-                    break;
-                }
-            }
-            for (int a = 0; a < miners[minerIndex].Count; a++) {
-                if (miners[minerIndex][a].Key == block) {
-                    miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
-                    TryToAddChain(block);
-                }
-            }
-        }
-
-        public static void TryToAddChain(Block block) {
-            int countOfTrueBlock = 0;
-            for (int a = 0; a < miners.Count; a++) {
-                for (int b = 0; b < miners[a].Count; b++) {
-                    if (miners[a][b].Key == block) {
-                        if (miners[a][b].Value) {
-                            countOfTrueBlock++;
-                            break;
-                        }
-                    }
-                }
-            }
-            Console.WriteLine("Miners Count: " + minerIPs.Count);
-            Console.WriteLine("True Count: " + countOfTrueBlock);
-            if (countOfTrueBlock > (minerIPs.Count / 2.0)) {
-                AddBlockToChain(block, block.BlockID);
-            }
-        }
-
-        public static void ConnectToNetwork() {
-            TCP.SendWebServer("connectToNetwork" + TCP.myIP);
-            Console.WriteLine("Connect request sent to network");
-        }
     }
 }

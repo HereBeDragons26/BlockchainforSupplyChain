@@ -21,10 +21,10 @@ namespace Blockchain {
         }
 
         public void Mine() {
-            int division = int.MaxValue / BlockChain.minerIPs.Count;
+            int division = int.MaxValue / Miners.minerIPs.Count;
             Nonce = 0;
-            for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
-                if (BlockChain.minerIPs[a].Equals(TCP.myIP))
+            for (int a = 0; a < Miners.minerIPs.Count; a++) {
+                if (Miners.minerIPs[a].Equals(TCP.myIP))
                     Nonce = division * a;
             }
             Console.WriteLine("Mine started");
@@ -34,7 +34,7 @@ namespace Blockchain {
                 if (ChangeNonce(Nonce)) {
                     Console.WriteLine("Mine ended");
                     Time = DateTime.Now;
-                    BlockChain.SetMyMinerTrue(Time, BlockID);
+                    Miners.SetMyMinerTrue(Time, BlockID);
                     TCP.SendAllMiners("checkNonce"+ Time.ToString() + "$" + BlockID.ToString() + "$" + Nonce.ToString());
                     break;
                 }

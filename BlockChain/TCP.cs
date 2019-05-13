@@ -14,44 +14,12 @@ namespace Blockchain {
 
         public static readonly int WebServerPort = 13001;
         public static readonly int MinerPort = 13000;
-        public static string WebServerIp = "192.168.43.14";
+        public static string WebServerIp;
         public static string myIP;
 
         public static void Send(string ip, string message) {
-            TcpClient tcpClient = new TcpClient(ip, MinerPort);
-            NetworkStream stream = tcpClient.GetStream();
-
-            ASCIIEncoding asen = new ASCIIEncoding();
-            byte[] ba = asen.GetBytes(message);
-
-            stream.Write(ba, 0, ba.Length);
-
-            tcpClient.Close();
-            stream.Flush();
-            stream.Close();
-        }
-
-        public static void SendWebServer(string message) {
-            TcpClient tcpClient = new TcpClient(WebServerIp, WebServerPort);
-            NetworkStream stream = tcpClient.GetStream();
-
-            ASCIIEncoding asen = new ASCIIEncoding();
-            byte[] ba = asen.GetBytes(message);
-
-            stream.Write(ba, 0, ba.Length);
-
-            tcpClient.Close();
-            stream.Flush();
-            stream.Close();
-        }
-
-
-        public static void SendAllMiners(string message) {
-            BlockChain.minerIPs.ForEach(mp => {
-
-                if (mp == TCP.myIP) return;
-
-                TcpClient tcpClient = new TcpClient(mp, MinerPort);
+            try {
+                TcpClient tcpClient = new TcpClient(ip, MinerPort);
                 NetworkStream stream = tcpClient.GetStream();
 
                 ASCIIEncoding asen = new ASCIIEncoding();
@@ -62,11 +30,57 @@ namespace Blockchain {
                 tcpClient.Close();
                 stream.Flush();
                 stream.Close();
-            });
+            }
+            catch (Exception e) {
+                Console.WriteLine("----------Can't connect to miner----------\n\n" + e.StackTrace);
+            }
+        }
+
+        public static void SendWebServer(string message) {
+            try {
+                TcpClient tcpClient = new TcpClient(WebServerIp, WebServerPort);
+                NetworkStream stream = tcpClient.GetStream();
+
+                ASCIIEncoding asen = new ASCIIEncoding();
+                byte[] ba = asen.GetBytes(message);
+
+                stream.Write(ba, 0, ba.Length);
+
+                tcpClient.Close();
+                stream.Flush();
+                stream.Close();
+            }
+            catch(Exception e) {
+                Console.WriteLine("----------Can't connect to webserver----------\n\n" + e.StackTrace);
+            }
+        }
+
+
+        public static void SendAllMiners(string message) {
+            try {
+                Miners.minerIPs.ForEach(mp => {
+
+                    if (mp == myIP) return;
+
+                    TcpClient tcpClient = new TcpClient(mp, MinerPort);
+                    NetworkStream stream = tcpClient.GetStream();
+
+                    ASCIIEncoding asen = new ASCIIEncoding();
+                    byte[] ba = asen.GetBytes(message);
+
+                    stream.Write(ba, 0, ba.Length);
+
+                    tcpClient.Close();
+                    stream.Flush();
+                    stream.Close();
+                });
+            }
+            catch (Exception e) {
+                Console.WriteLine("----------Can't connect to miners----------\n\n" + e.StackTrace);
+            }
         }
 
         private static void ListenerMethod() {
-
             TcpListener listener = new TcpListener(IPAddress.Any, MinerPort);
             listener.Start();
             Socket client = null;
@@ -86,7 +100,7 @@ namespace Blockchain {
 
                 }
                 catch (Exception e) {
-                    Console.WriteLine(e.ToString());
+                    Console.WriteLine(e.StackTrace);
                 }
             }
         }
@@ -107,14 +121,14 @@ namespace Blockchain {
                 //Console.WriteLine(BlockChain.minerIPs.Count);
                 object ret = JsonDeserialize(message);
                 var obj = Cast(ret, new { miners = new List<string>() });
-                BlockChain.minerIPs = obj.miners;
-                Console.WriteLine("Current miner count: " + BlockChain.minerIPs.Count);
+                Miners.minerIPs = obj.miners;
+                Console.WriteLine("Current miner count: " + Miners.minerIPs.Count);
 
-                for (int a = 0; a < BlockChain.minerIPs.Count; a++) {
-                    BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
+                for (int a = 0; a < Miners.minerIPs.Count; a++) {
+                    Miners.miners.Add(new List<KeyValuePair<Block, bool>>());
                 }
 
-                if(BlockChain.minerIPs.Count != 0)
+                if(Miners.minerIPs.Count != 0)
                     SendAllMiners("getChain");
                 else {
                     BlockChain.GetChain();
@@ -134,14 +148,14 @@ namespace Blockchain {
                 Console.WriteLine("checkNonce");
                 message = message.Substring(10);
                 string[] checkNonceArray = message.Split('$');
-                BlockChain.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]));
+                Miners.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]));
                 return;
             }
 
             if (message.StartsWith("nonceIsTrue")) {
                 Console.WriteLine("nonceIsTrue");
                 message = message.Substring(11);
-                BlockChain.SetMinersTrue(ip, long.Parse(message));
+                Miners.SetMinersTrue(ip, long.Parse(message));
                 return;
             }
 
@@ -159,15 +173,15 @@ namespace Blockchain {
 
             if (message.StartsWith("newMinerJoined")) {
                 message = message.Substring(14);
-                BlockChain.minerIPs.Add(message);
-                BlockChain.miners.Add(new List<KeyValuePair<Block, bool>>());
+                Miners.minerIPs.Add(message);
+                Miners.miners.Add(new List<KeyValuePair<Block, bool>>());
                 if(message == myIP) {
                     Console.WriteLine("\n-------Connected to network!-------\n");
                 }
                 else {
                     Console.WriteLine("New miner joined to network -> " + message);
                 }
-                Console.WriteLine("Current miner count: " + BlockChain.minerIPs.Count);
+                Console.WriteLine("Current miner count: " + Miners.minerIPs.Count);
                 return;
             }
 
@@ -179,7 +193,6 @@ namespace Blockchain {
                 Console.WriteLine("Product returned");
                 return;
             }
-
         }
 
         public static T Cast<T>(object obj, T type) { return (T)obj; }
