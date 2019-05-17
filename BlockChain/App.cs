@@ -8,14 +8,20 @@ namespace Blockchain {
 
         public static void Main() {
             IPAddress[] address = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-            TCP.myIP = address[1].ToString();
-            Console.WriteLine("Your ip is: " + TCP.myIP + "\n" +
-                "Is it true Y/N");
-            string answer = Console.ReadLine();
-            if(!answer.ToLower().Equals("y")) {
-                Console.WriteLine("Enter your ip");
-                TCP.myIP = Console.ReadLine();
+            List<string> addressList = new List<string>();
+            int b = 1;
+            for(int a = 0; a < address.Length; a++) {
+                string ipString = address[a].ToString();
+                if(!ipString.Contains("::")) {
+                    addressList.Add(address[a].ToString());
+                    Console.WriteLine(b + "- " + address[a].ToString());
+                    b++;
+                }
             }
+            Console.WriteLine("Please select your ip.");
+            int select = int.Parse(Console.ReadLine());
+            TCP.myIP = addressList[select - 1];
+            Console.WriteLine("Your ip: " + TCP.myIP);
                 
             TCP.StartListener();
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
