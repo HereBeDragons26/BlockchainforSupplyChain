@@ -59,7 +59,6 @@ namespace Blockchain {
             }
         }
 
-
         public static void ConnectToNetwork() {
             TCP.SendWebServer("connectToNetwork" + TCP.myIP);
             Console.WriteLine("Connect request sent to network");
@@ -92,7 +91,7 @@ namespace Blockchain {
 
             if (block == null) return;
 
-            if (((miners[myIndex][blockIndex].Key.Time.CompareTo(time)) >= 0 || (miners[myIndex][blockIndex].Key.Time.Year == 1)) && !miners[myIndex][blockIndex].Value) {
+            if ((miners[myIndex][blockIndex].Key.Time.CompareTo(time) >= 0 ) && !miners[myIndex][blockIndex].Value) {
                 miners[myIndex].RemoveAt(blockIndex);
                 block.Time = time;
                 miners[myIndex].Add(new KeyValuePair<Block, bool>(block, true));
