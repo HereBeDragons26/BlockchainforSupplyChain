@@ -141,7 +141,7 @@ namespace Blockchain {
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
                     if (Miners.miners[a][b].Key.BlockID == blockID) {
-                        if(Miners.miners[a][b].Key.Time < block.Time ) {
+                        if(Miners.miners[a][b].Key.Time.CompareTo(block.Time) < 0) {
                             block.Time = Miners.miners[a][b].Key.Time;
                         }
                         Miners.miners[a].RemoveAt(b);
@@ -153,9 +153,9 @@ namespace Blockchain {
             Console.WriteLine("Block added to chain.");
 
             Console.WriteLine(
-                "\n***********" +
-                "\n***Chain***" +
-                "\n***********");
+                "\n*******************" +
+                "\n*******Chain*******" +
+                "\n*******************");
             for(int a = 0; a < GetChain().Count; a++) {
                 Console.WriteLine(GetChain()[a].ToString());
             }

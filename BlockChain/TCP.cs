@@ -148,7 +148,7 @@ namespace Blockchain {
                 Console.WriteLine("checkNonce");
                 message = message.Substring(10);
                 string[] checkNonceArray = message.Split('$');
-                Miners.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]));
+                Miners.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]), ip);
                 return;
             }
 

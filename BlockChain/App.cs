@@ -51,6 +51,7 @@ namespace Blockchain {
             Console.WriteLine(
                 "Command List: \n" +
                 "connect [ip] --> Connect to website and join other miners. [ip] is webserver's ip.\n" +
+                "print [id] --> Print block which given id\n" + 
                 "exit --> Leave the network\n" +
                 "quit --> exit application\n");
 
@@ -72,6 +73,11 @@ namespace Blockchain {
                     TCP.WebServerIp = command;
                     Miners.ConnectToNetwork();
                     continue;
+                }
+                if (command.StartsWith("print")) {
+                    command = command.Substring(6);
+                    Console.WriteLine(BlockChain.GetBlock(int.Parse(command)).ToString());
+                    break;
                 }
                 if (command.Equals("exit")) {
                     Console.WriteLine("Leaving network...\nPlease press a key");

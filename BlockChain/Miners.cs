@@ -24,16 +24,20 @@ namespace Blockchain {
         /// <param name="time"></param>
         /// <param name="blockID"></param>
         /// <param name="nonce"></param>
-        public static void SetMyMinerTrue(DateTime time, long blockID, int nonce) {
+        public static void SetMyMinerTrue(DateTime time, long blockID, int nonce, string ip) {
             Console.WriteLine("SetMyMinerTrueWithNonce");
             Console.WriteLine("Nonce is checking for " + blockID);
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             Block block = keyValuePair.Value;
 
+            if (block == null) return;
+
             if (block.ChangeNonce(nonce)) {
                 Console.WriteLine("Nonce is true for " + blockID);
 
                 UpdateProcessingBlockList(time, blockID);
+                SetMinersTrue(ip, blockID);
+
                 TCP.SendAllMiners("nonceIsTrue" + blockID);
             }
             else Console.WriteLine("Nonce is wrong for " + blockID);
@@ -45,6 +49,8 @@ namespace Blockchain {
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             int blockIndex = keyValuePair.Key;
             Block block = keyValuePair.Value;
+
+            if (block == null) return;
 
             if (miners[minerIndex][blockIndex].Key.BlockID == block.BlockID) {
                 miners[minerIndex].RemoveAt(blockIndex);
@@ -83,6 +89,8 @@ namespace Blockchain {
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             int blockIndex = keyValuePair.Key;
             Block block = keyValuePair.Value;
+
+            if (block == null) return;
 
             if (((miners[myIndex][blockIndex].Key.Time.CompareTo(time)) >= 0 || (miners[myIndex][blockIndex].Key.Time.Year == 1)) && !miners[myIndex][blockIndex].Value) {
                 miners[myIndex].RemoveAt(blockIndex);
