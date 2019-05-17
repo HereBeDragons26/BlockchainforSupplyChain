@@ -18,6 +18,7 @@ namespace Blockchain {
             Data = data;
             Hash = CalculateHash();
             PreviousHash = previousHash;
+            Time = DateTime.MaxValue;
         }
 
         public void Mine() {
