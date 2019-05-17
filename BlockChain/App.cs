@@ -18,9 +18,14 @@ namespace Blockchain {
                     b++;
                 }
             }
-            Console.WriteLine("Please select your ip.");
-            int select = int.Parse(Console.ReadLine());
-            TCP.myIP = addressList[select - 1];
+            if(addressList.Count == 1) {
+                TCP.myIP = addressList[0];
+            }
+            else {
+                Console.WriteLine("Please select your ip.");
+                int select = int.Parse(Console.ReadLine());
+                TCP.myIP = addressList[select - 1];
+            }
             Console.WriteLine("Your ip: " + TCP.myIP);
                 
             TCP.StartListener();

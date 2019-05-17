@@ -88,7 +88,7 @@ namespace Blockchain {
             while (true) {
                 try {
                     client = listener.AcceptSocket();
-                    String ip = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
+                    string ip = ((IPEndPoint)client.RemoteEndPoint).Address.ToString();
                     byte[] bytes = new byte[1024];
 
                     int size = client.Receive(bytes);
@@ -107,7 +107,7 @@ namespace Blockchain {
 
         public static void StartListener() {
             listenerThread = new Thread(new ThreadStart(ListenerMethod)) {
-                Name = "UdpConnection.ListenThread"
+                Name = "TCPConnection.ListenThread"
             };
             listenerThread.Start();
         }

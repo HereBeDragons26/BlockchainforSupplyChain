@@ -46,7 +46,7 @@ namespace Blockchain {
             int blockIndex = keyValuePair.Key;
             Block block = keyValuePair.Value;
 
-            if (miners[minerIndex][blockIndex].Key == block) {
+            if (miners[minerIndex][blockIndex].Key.BlockID == block.BlockID) {
                 miners[minerIndex].RemoveAt(blockIndex);
                 miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
                 BlockChain.TryToAddChain(block);
@@ -84,7 +84,7 @@ namespace Blockchain {
             int blockIndex = keyValuePair.Key;
             Block block = keyValuePair.Value;
 
-            if (!((miners[myIndex][blockIndex].Key.Time < time) && miners[myIndex][blockIndex].Value)) {
+            if (((miners[myIndex][blockIndex].Key.Time.CompareTo(time)) > 0 || (time.Year == 0001)) && !miners[myIndex][blockIndex].Value) {
                 miners[myIndex].RemoveAt(blockIndex);
                 block.Time = time;
                 miners[myIndex].Add(new KeyValuePair<Block, bool>(block, true));
