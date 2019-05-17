@@ -35,7 +35,7 @@ namespace Blockchain {
                 if (ChangeNonce(Nonce)) {
                     Console.WriteLine("Mine ended");
                     Time = DateTime.Now;
-                    Miners.SetMyMinerTrue(Time, BlockID);
+                    Miners.SetMyMinerTrue(this);
                     TCP.SendAllMiners("checkNonce"+ Time.ToString() + "$" + BlockID.ToString() + "$" + Nonce.ToString());
                     break;
                 }

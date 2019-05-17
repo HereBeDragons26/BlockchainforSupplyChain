@@ -128,9 +128,7 @@ namespace Blockchain {
             Console.WriteLine("Miners Count: " + Miners.minerIPs.Count);
             Console.WriteLine("True Count: " + countOfTrueBlock);
             if (countOfTrueBlock > (Miners.minerIPs.Count / 2.0)) {
-                Thread addBlockToChainThread = new Thread(new ThreadStart(block.Mine)) {
-                    Name = "NonceFinderThread" + block.BlockID
-                };
+                Thread addBlockToChainThread = new Thread(() => AddBlockToChain(block, block.BlockID));
                 addBlockToChainThread.Start();
             }
         }
@@ -141,12 +139,14 @@ namespace Blockchain {
         /// <param name="block"></param>
         /// <param name="blockID"></param>
         public static void AddBlockToChain(Block block, long blockID) {
-           Thread.Sleep(5000);
+           Thread.Sleep(3000);
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
                     if (Miners.miners[a][b].Key.BlockID == blockID) {
                         if(Miners.miners[a][b].Key.Time.CompareTo(block.Time) < 0) {
                             block.Time = Miners.miners[a][b].Key.Time;
+                            block.Nonce = Miners.miners[a][b].Key.Nonce;
+                            block.Hash = Miners.miners[a][b].Key.Hash;
                         }
                         Miners.miners[a].RemoveAt(b);
                         break;

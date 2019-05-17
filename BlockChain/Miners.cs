@@ -13,9 +13,9 @@ namespace Blockchain {
         /// </summary>
         /// <param name="time"></param>
         /// <param name="blockID"></param>
-        public static void SetMyMinerTrue(DateTime time, long blockID) {
+        public static void SetMyMinerTrue(Block block) {
             Console.WriteLine("SetMyMinerTrue");
-            UpdateProcessingBlockList(time, blockID);
+            UpdateProcessingBlockList(block);
         }
 
         /// <summary>
@@ -33,10 +33,11 @@ namespace Blockchain {
             if (block == null) return;
 
             if (block.ChangeNonce(nonce)) {
+                block.Time = time;
                 Console.WriteLine("Nonce is true for " + blockID);
 
-                UpdateProcessingBlockList(time, blockID);
-                SetMinersTrue(ip, blockID);
+                UpdateProcessingBlockList(block);
+                SetMinersTrue(ip, block.BlockID);
 
                 TCP.SendAllMiners("nonceIsTrue" + blockID);
             }
@@ -83,20 +84,22 @@ namespace Blockchain {
             return new KeyValuePair<int, Block>();
         }
 
-        public static void UpdateProcessingBlockList(DateTime time, long blockID) {
+        public static void UpdateProcessingBlockList(Block block) {
             int myIndex = FindIndexOfGivenInput(TCP.myIP);
-            var keyValuePair = GetBlockInProcessingBlock(blockID);
+            var keyValuePair = GetBlockInProcessingBlock(block.BlockID);
             int blockIndex = keyValuePair.Key;
-            Block block = keyValuePair.Value;
+            Block processingBlock = keyValuePair.Value;
 
-            if (block == null) return;
+            if (processingBlock == null) return;
 
-            if ((miners[myIndex][blockIndex].Key.Time.CompareTo(time) >= 0 ) && !miners[myIndex][blockIndex].Value) {
+            if (miners[myIndex][blockIndex].Key.Time.CompareTo(block.Time) >= 0) {
                 miners[myIndex].RemoveAt(blockIndex);
-                block.Time = time;
-                miners[myIndex].Add(new KeyValuePair<Block, bool>(block, true));
+                processingBlock.Time = block.Time;
+                processingBlock.Nonce = block.Nonce;
+                processingBlock.Hash = block.Hash;
+                miners[myIndex].Add(new KeyValuePair<Block, bool>(processingBlock, true));
             }
-            BlockChain.TryToAddChain(block);
+            BlockChain.TryToAddChain(processingBlock);
         }
     }
 }
