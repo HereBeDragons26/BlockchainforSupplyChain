@@ -64,5 +64,15 @@ namespace Blockchain {
             byte[] output = sHA256.ComputeHash(input);
             return Convert.ToBase64String(output);
         }
+
+        public override string ToString() {
+            return
+                "\n---Block---" + 
+                "\nBlockID: " + BlockID +
+                "\nTime: " + Time +
+                "\nHash: " + Hash +
+                "\nNonce: " + Nonce +
+                "\n---Block---\n";
+        }
     }
 }

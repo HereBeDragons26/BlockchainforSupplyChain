@@ -148,6 +148,11 @@ namespace Blockchain {
             }
             Chain.Add(block);
             Console.WriteLine("Block added to chain.");
+
+            Console.WriteLine("***Chain***");
+            for(int a = 0; a < GetChain().Count; a++) {
+                Console.WriteLine(GetChain()[a].ToString());
+            }
         }
 
     }
