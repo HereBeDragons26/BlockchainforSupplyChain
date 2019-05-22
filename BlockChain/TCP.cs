@@ -202,7 +202,12 @@ namespace Blockchain {
                 bool wait = true;
                 while (wait){
                     List<Block> chain = BlockChain.GetChain();
-                    wait = !chain.Exists(b => b.BlockID.Equals(takenBlock.BlockID));
+
+                    try {
+                        wait = !chain.Exists(b => b.BlockID.Equals(takenBlock.BlockID));
+                    }
+                    catch { }
+
                 }
 
                 Console.WriteLine("block recieved from a miner");
@@ -210,7 +215,11 @@ namespace Blockchain {
                 Block currentBlock = BlockChain.GetBlock(takenBlock.BlockID);
 
                 // change time earlier if taken one is earlier
-                if (currentBlock.Time.CompareTo(takenBlock.Time) > 0) currentBlock.Time = takenBlock.Time;
+                if (currentBlock.Time.CompareTo(takenBlock.Time) > 0) {
+                    currentBlock.Time = takenBlock.Time;
+                    currentBlock.Nonce = takenBlock.Nonce;
+                    currentBlock.Hash = currentBlock.CalculateHash();
+                }
 
                 // change smaller nonce if the found dates equal
                 if (currentBlock.Time.CompareTo(takenBlock.Time) == 0) currentBlock.Nonce = Math.Min(takenBlock.Nonce, currentBlock.Nonce);
