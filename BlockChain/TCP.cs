@@ -199,13 +199,18 @@ namespace Blockchain {
                 Block takenBlock = (Block) JsonDeserialize(message);
 
                 // wait until the block is inserted into chain
-                while (BlockChain.GetChain().Find(b => b.BlockID == takenBlock.BlockID) == null) ;
+                while (!BlockChain.GetChain().Exists( b => b.BlockID == takenBlock.BlockID)) ;
 
                 Console.WriteLine("block recieved from a miner");
 
                 Block currentBlock = BlockChain.GetBlock(takenBlock.BlockID);
+
                 // change time earlier if taken one is earlier
                 if (currentBlock.Time.CompareTo(takenBlock.Time) > 0) currentBlock.Time = takenBlock.Time;
+
+                // change smaller nonce if the found dates equal
+                if (currentBlock.Time.CompareTo(takenBlock.Time) == 0) currentBlock.Nonce = Math.Min(takenBlock.Nonce, currentBlock.Nonce);
+
             }
 
         }
