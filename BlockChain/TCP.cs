@@ -193,6 +193,15 @@ namespace Blockchain {
                 Console.WriteLine("Product returned");
                 return;
             }
+
+            if (message.StartsWith("block")) {
+                message = message.Substring(5);
+                Block takenBlock = (Block) JsonDeserialize(message);
+                Block currentBlock = BlockChain.GetBlock(takenBlock.BlockID);
+                // change time earlier if taken one is earlier
+                if (currentBlock.Time.CompareTo(takenBlock.Time) > 0) currentBlock.Time = takenBlock.Time;
+            }
+
         }
 
         public static T Cast<T>(object obj, T type) { return (T)obj; }

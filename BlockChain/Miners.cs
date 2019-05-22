@@ -56,6 +56,7 @@ namespace Blockchain {
             if (miners[minerIndex][blockIndex].Key.BlockID == block.BlockID) {
                 miners[minerIndex].RemoveAt(blockIndex);
                 miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
+                Console.WriteLine("SetMinersTrue block -> " + block.Time + " " + block.Nonce);
                 BlockChain.TryToAddChain(block);
             }
         }
@@ -85,6 +86,7 @@ namespace Blockchain {
         }
 
         public static void UpdateProcessingBlockList(Block block) {
+            Console.WriteLine("UpdateProcessingBlockList block -> " + block.Time + " " + block.Nonce);
             int myIndex = FindIndexOfGivenInput(TCP.myIP);
             var keyValuePair = GetBlockInProcessingBlock(block.BlockID);
             int blockIndex = keyValuePair.Key;

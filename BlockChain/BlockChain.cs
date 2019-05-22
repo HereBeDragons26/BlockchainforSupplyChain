@@ -114,6 +114,7 @@ namespace Blockchain {
         }
 
         public static void TryToAddChain(Block block) {
+            Console.WriteLine("TryToAddChain block -> " + block.Time + " " + block.Nonce);
             int countOfTrueBlock = 0;
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
@@ -138,7 +139,7 @@ namespace Blockchain {
         /// <param name="block"></param>
         /// <param name="blockID"></param>
         public static void AddBlockToChain(Block block) {
-           Thread.Sleep(1000);
+
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
                     if (Miners.miners[a][b].Key.BlockID == block.BlockID) {
@@ -152,21 +153,18 @@ namespace Blockchain {
                     }
                 }
             }
+
             for(int a = 0; a < Chain.Count; a++) {
                 if(Chain[a].BlockID == block.BlockID) {
                     return;
                 }
             }
-            Chain.Add(block);
-            Console.WriteLine("Block added to chain.");
 
-            Console.WriteLine(
-                "\n*******************" +
-                "\n*******Chain*******" +
-                "\n*******************");
-            for(int a = 0; a < GetChain().Count; a++) {
-                Console.WriteLine(GetChain()[a].ToString());
-            }
+            Chain.Add(block);
+
+            // notify all miners that a block is added into the local chain
+            TCP.SendAllMiners("block" + TCP.JsonSerialize(block));
+
         }
 
     }

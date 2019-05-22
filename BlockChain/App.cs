@@ -79,6 +79,11 @@ namespace Blockchain {
                     Console.WriteLine(BlockChain.GetBlock(int.Parse(command)).ToString());
                     break;
                 }
+                if (command.StartsWith("chain")) {
+                    Console.WriteLine("Chain");
+                    BlockChain.GetChain().ForEach(b => Console.WriteLine(b.ToString()));
+                    Console.WriteLine();
+                }
                 if (command.Equals("exit")) {
                     Console.WriteLine("Leaving network...\nPlease press a key");
                     Console.ReadKey();
