@@ -199,7 +199,11 @@ namespace Blockchain {
                 Block takenBlock = (Block) JsonDeserialize(message);
 
                 // wait until the block is inserted into chain
-                while (!BlockChain.GetChain().Exists( b => b.BlockID == takenBlock.BlockID)) ;
+                bool wait = true;
+                while (wait){
+                    List<Block> chain = BlockChain.GetChain();
+                    wait = !chain.Exists(b => b.BlockID.Equals(takenBlock.BlockID));
+                }
 
                 Console.WriteLine("block recieved from a miner");
 
