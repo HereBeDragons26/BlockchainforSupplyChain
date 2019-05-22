@@ -197,6 +197,12 @@ namespace Blockchain {
             if (message.StartsWith("block")) {
                 message = message.Substring(5);
                 Block takenBlock = (Block) JsonDeserialize(message);
+
+                // wait until the block is inserted into chain
+                while (BlockChain.GetChain().Find(b => b.BlockID == takenBlock.BlockID) == null) ;
+
+                Console.WriteLine("block recieved from a miner");
+
                 Block currentBlock = BlockChain.GetBlock(takenBlock.BlockID);
                 // change time earlier if taken one is earlier
                 if (currentBlock.Time.CompareTo(takenBlock.Time) > 0) currentBlock.Time = takenBlock.Time;
