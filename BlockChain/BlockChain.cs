@@ -18,6 +18,8 @@ namespace Blockchain {
         private BlockChain() {
             GetChain();
             blockChainInstance = this;
+
+
         }
         public static List<Block> GetChain() {
             if (Chain == null) {
@@ -106,6 +108,10 @@ namespace Blockchain {
                 block = CreateBlock(data);
                 Miners.miners[a].Add(new KeyValuePair<Block, bool>(block, false));
             }
+
+            // send webserver BlockID
+            if(Miners.minerIPs[0].Equals(TCP.myIP)) TCP.SendWebServer("BlockID" + block.BlockID);
+
             Console.WriteLine("Received new block");
             nonceFinderThread = new Thread(new ThreadStart(block.Mine)) {
                 Name = "NonceFinderThread" + block.BlockID
