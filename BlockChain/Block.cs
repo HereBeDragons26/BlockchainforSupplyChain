@@ -73,6 +73,7 @@ namespace Blockchain {
                 "\nTime: " + Time +
                 "\nHash: " + Hash +
                 "\nNonce: " + Nonce +
+                "\nData: " + Data.ToString() +
                 "\n---Block---\n";
         }
     }

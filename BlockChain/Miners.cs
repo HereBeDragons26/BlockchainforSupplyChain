@@ -14,7 +14,6 @@ namespace Blockchain {
         /// <param name="time"></param>
         /// <param name="blockID"></param>
         public static void SetMyMinerTrue(Block block) {
-            Console.WriteLine("SetMyMinerTrue");
             UpdateProcessingBlockList(block);
         }
 
@@ -25,7 +24,6 @@ namespace Blockchain {
         /// <param name="blockID"></param>
         /// <param name="nonce"></param>
         public static void SetMyMinerTrue(DateTime time, long blockID, int nonce, string ip) {
-            Console.WriteLine("SetMyMinerTrueWithNonce");
             Console.WriteLine("Nonce is checking for " + blockID);
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             Block block = keyValuePair.Value;
@@ -45,7 +43,6 @@ namespace Blockchain {
         }
 
         public static void SetMinersTrue(string ip, long blockID) {
-            Console.WriteLine("SetMinersTrue");
             int minerIndex = FindIndexOfGivenInput(ip);
             var keyValuePair = GetBlockInProcessingBlock(blockID);
             int blockIndex = keyValuePair.Key;
@@ -56,7 +53,6 @@ namespace Blockchain {
             if (miners[minerIndex][blockIndex].Key.BlockID == block.BlockID) {
                 miners[minerIndex].RemoveAt(blockIndex);
                 miners[minerIndex].Add(new KeyValuePair<Block, bool>(block, true));
-                Console.WriteLine("SetMinersTrue block -> " + block.Time + " " + block.Nonce);
                 BlockChain.TryToAddChain(block);
             }
         }
@@ -86,7 +82,6 @@ namespace Blockchain {
         }
 
         public static void UpdateProcessingBlockList(Block block) {
-            Console.WriteLine("UpdateProcessingBlockList block -> " + block.Time + " " + block.Nonce);
             int myIndex = FindIndexOfGivenInput(TCP.myIP);
             var keyValuePair = GetBlockInProcessingBlock(block.BlockID);
             int blockIndex = keyValuePair.Key;

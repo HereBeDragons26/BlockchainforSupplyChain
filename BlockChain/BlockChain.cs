@@ -29,9 +29,12 @@ namespace Blockchain {
             return Chain;
         }
 
+        public static void SetChain(List<Block> chain) {
+            Chain = chain;
+        }
+
         public static void ReceiveChain(List<Block> blockChain) {
             Chain = blockChain;
-            Console.WriteLine("Received blockchain");
             TCP.SendWebServer("addMeNow");
         }
 
@@ -121,7 +124,6 @@ namespace Blockchain {
         }
 
         public static void TryToAddChain(Block block) {
-            Console.WriteLine("TryToAddChain block -> " + block.Time + " " + block.Nonce);
             int countOfTrueBlock = 0;
             for (int a = 0; a < Miners.miners.Count; a++) {
                 for (int b = 0; b < Miners.miners[a].Count; b++) {
@@ -133,8 +135,6 @@ namespace Blockchain {
                     }
                 }
             }
-            Console.WriteLine("Miners Count: " + Miners.minerIPs.Count);
-            Console.WriteLine("True Count: " + countOfTrueBlock);
             if (countOfTrueBlock > (Miners.minerIPs.Count / 2.0)) {
                 AddBlockToChain(block);
             }

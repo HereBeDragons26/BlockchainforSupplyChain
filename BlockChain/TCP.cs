@@ -118,22 +118,20 @@ namespace Blockchain {
             // received miners list
             if (message.StartsWith("minersList")) {
                 message = message.Substring(10);
-                //Console.WriteLine(BlockChain.minerIPs.Count);
                 object ret = JsonDeserialize(message);
-                var obj = Cast(ret, new { miners = new List<string>() });
-                Miners.minerIPs = obj.miners;
+                var obj = Cast(ret, new { list = new List<string>() });
+                Miners.minerIPs = obj.list;
                 Console.WriteLine("Current miner count: " + Miners.minerIPs.Count);
 
                 for (int a = 0; a < Miners.minerIPs.Count; a++) {
                     Miners.miners.Add(new List<KeyValuePair<Block, bool>>());
                 }
 
-                if(Miners.minerIPs.Count != 0)
-                    SendAllMiners("getChain");
-                else {
+                if(Miners.minerIPs.Count == 0) {
                     BlockChain.GetChain();
                     SendWebServer("addMeNow");
                 }
+
                 return;
             }
 
@@ -145,7 +143,6 @@ namespace Blockchain {
             }
 
             if (message.StartsWith("checkNonce")) {
-                Console.WriteLine("checkNonce");
                 message = message.Substring(10);
                 string[] checkNonceArray = message.Split('$');
                 Miners.SetMyMinerTrue(DateTime.Parse(checkNonceArray[0]), long.Parse(checkNonceArray[1]), Int32.Parse(checkNonceArray[2]), ip);
@@ -153,7 +150,6 @@ namespace Blockchain {
             }
 
             if (message.StartsWith("nonceIsTrue")) {
-                Console.WriteLine("nonceIsTrue");
                 message = message.Substring(11);
                 Miners.SetMinersTrue(ip, long.Parse(message));
                 return;
@@ -186,11 +182,9 @@ namespace Blockchain {
             }
 
             if (message.StartsWith("verify")) {
-                Console.WriteLine("verify");
                 message = message.Substring(6);
                 Product product = BlockChain.GetProductInfo(long.Parse(message));
                 SendWebServer("verifyReturn" + JsonSerialize(product));
-                Console.WriteLine("Product returned");
                 return;
             }
 
@@ -209,8 +203,6 @@ namespace Blockchain {
                     catch { }
 
                 }
-
-                Console.WriteLine("block recieved from a miner");
 
                 Block currentBlock = BlockChain.GetBlock(takenBlock.BlockID);
 

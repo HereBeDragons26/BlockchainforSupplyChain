@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 
@@ -80,9 +81,26 @@ namespace Blockchain {
                     break;
                 }
                 if (command.StartsWith("chain")) {
-                    Console.WriteLine("Chain");
+                    Console.WriteLine("\n--------BLOCKCHAIN--------");
                     BlockChain.GetChain().ForEach(b => Console.WriteLine(b.ToString()));
-                    Console.WriteLine();
+                    Console.WriteLine("--------BLOCKCHAIN--------\n");
+                }
+                if (command.StartsWith("get")) {
+                    if(BlockChain.GetChain().Count == 1) TCP.Send(Miners.minerIPs[0], "getChain");
+                    else Console.WriteLine("Already have chain");
+                }
+                if (command.StartsWith("read")) {
+                    string path = command.Substring(5);
+                    string st = File.ReadAllText(path);
+                    object ret = TCP.JsonDeserialize(st);
+                    var obj = TCP.Cast(ret, new { list = new List<Block>() });
+                    BlockChain.SetChain(obj.list);
+                    TCP.SendWebServer("addMeNow");
+                }
+                if (command.StartsWith("write")) {
+                    string path = command.Substring(6);
+                    string st = TCP.JsonSerialize(new { list = BlockChain.GetChain() });
+                    File.WriteAllText(path, st);
                 }
                 if (command.Equals("exit")) {
                     Console.WriteLine("Leaving network...\nPlease press a key");
