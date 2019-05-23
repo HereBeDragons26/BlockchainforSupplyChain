@@ -63,7 +63,7 @@ namespace Blockchain {
             return Chain[(int)(blockID - genesisBlockID)];
         }
 
-        public static List<Block> productBlocks = new List<Block>();
+        public static List<Block> productBlocks;
         private static void GetAllBlockRec(Block block) {
             productBlocks.Add(block);
             for (int a = 0; a < block.Data.ParentID.Count; a++) {
@@ -88,6 +88,7 @@ namespace Blockchain {
         /// <param name="blockID"></param>
         /// <returns>List of features</returns>
         public static Product GetProductInfo(long blockID) {
+            productBlocks = new List<Block>();
             List<Block> blocks = GetAllBlock(blockID);
             Product product = new Product();
             for (int a = 0; a < blocks.Count; a++) {
